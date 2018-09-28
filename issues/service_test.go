@@ -6,8 +6,8 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/ghc-tdd/find-issues/issues"
-	"github.com/ghc-tdd/find-issues/issues/fakes"
+	"github.com/errskipower/find-issues/issues"
+	"github.com/errskipower/find-issues/issues/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -41,7 +41,7 @@ var _ = Describe("Issues Service", func() {
 		})
 
 		It("returns the list of open issues", func() {
-			issues, err := service.Get("")
+			issues, err := service.Get("", "")
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(client.GetCall.Receives.Url).To(Equal("https://api.github.com/repos/repo-name/issues"))
@@ -53,9 +53,17 @@ var _ = Describe("Issues Service", func() {
 
 		Context("when we pass in a label", func() {
 			It("generates the correct rawQuery string", func() {
-				_, err := service.Get("help wanted")
+				_, err := service.Get("help wanted", "")
 				Expect(err).NotTo(HaveOccurred())
 				Expect(client.GetCall.Receives.Url).To(Equal("https://api.github.com/repos/repo-name/issues?labels=help+wanted"))
+			})
+		})
+
+		Context("when we pass in a creator", func() {
+			It("generates the correct rawQuery string", func() {
+				_, err := service.Get("", "genevieve")
+				Expect(err).NotTo(HaveOccurred())
+				Expect(client.GetCall.Receives.Url).To(Equal("https://api.github.com/repos/repo-name/issues?creator=genevieve"))
 			})
 		})
 
@@ -66,7 +74,7 @@ var _ = Describe("Issues Service", func() {
 				})
 
 				It("returns the error", func() {
-					_, err := service.Get("")
+					_, err := service.Get("", "")
 
 					Expect(err).To(MatchError("hai"))
 				})
@@ -81,7 +89,7 @@ var _ = Describe("Issues Service", func() {
 				})
 
 				It("returns the error", func() {
-					_, err := service.Get("")
+					_, err := service.Get("", "")
 
 					Expect(err).To(MatchError("invalid path https://api.github.com/repos/repo-name/issues"))
 				})
@@ -96,7 +104,7 @@ var _ = Describe("Issues Service", func() {
 				})
 
 				It("returns the error", func() {
-					_, err := service.Get("")
+					_, err := service.Get("", "")
 
 					Expect(err).To(MatchError("invalid character '$' looking for beginning of value"))
 				})

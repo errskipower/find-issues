@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 type httpClient interface {
@@ -33,16 +34,20 @@ func NewService(repo string, client httpClient) Service {
 	}
 }
 
-func (i Service) Get(labelFilter string) ([]Issues, error) {
-	rawQuery := ""
+func (i Service) Get(labelFilter, creatorFilter string) ([]Issues, error) {
+	rawQueries := []string{}
 	if labelFilter != "" {
-		rawQuery = fmt.Sprintf("labels=%s", url.QueryEscape(labelFilter))
+		rawQueries = append(rawQueries, fmt.Sprintf("labels=%s", url.QueryEscape(labelFilter)))
+	}
+
+	if creatorFilter != "" {
+		rawQueries = append(rawQueries, fmt.Sprintf("creator=%s", url.QueryEscape(creatorFilter)))
 	}
 
 	u := &url.URL{
 		Scheme:   "https",
 		Path:     fmt.Sprintf("api.github.com/repos/%s/issues", i.repo),
-		RawQuery: rawQuery,
+		RawQuery: strings.Join(rawQueries, "&"),
 	}
 
 	res, err := i.client.Get(u.String())

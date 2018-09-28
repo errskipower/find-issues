@@ -31,16 +31,18 @@ var _ = Describe("Open Issues", func() {
 		})
 	})
 
-	// Context("when filtering by github creator", func() {
-	// 	It("returns the list of open issues that were created by a provided github username", func() {
-	// 		repo := "ghc-tdd/find-issues"
+	Context("when filtering by github creator", func() {
+		It("returns the list of open issues that were created by a provided github username", func() {
+			repo := "ghc-tdd/find-issues"
 
-	// 		output := execute(repo, "--creator", "angelachin")
+			output := execute(repo, "--creator", "angelachin")
 
-	// 		// TODO: Add expectations here.
-	// 		Expect(output).To(ContainSubstring(""))
-	// 	})
-	// })
+			// TODO: Add expectations here.
+			Expect(output).To(ContainSubstring("#9: Mock Issue for Username and Label Filter Testing"))
+			Expect(output).To(ContainSubstring("#8: Mock Issue for Username Filter Testing"))
+			Expect(output).NotTo(ContainSubstring("#1: User can get list of all open issues on a given repo"))
+		})
+	})
 })
 
 func execute(args ...string) string {
